@@ -1,0 +1,36 @@
+.content{
+    border: 1px solid rgb(183, 243, 183);
+    background-color: rgb(222,246,240);
+    font-size: 16px;
+    padding: 0 0 0 10px;
+    .header{
+        margin: 5px 0;
+        display: flex;
+        // justify-content: center;
+        align-items: center;
+        p{
+            margin: 0;
+        }
+        .request-type{
+            font-size: 18px;
+            height: 30px;
+            width: 50px;
+            background-color: rgb(49, 211, 49);
+            color: white;
+            text-align:center;
+            line-height: 25px;
+            font-weight: 800;
+        }
+        .request-url{
+            margin: 0 10px;
+        }
+    }
+    .request-parameter,.request-headers{
+        .addHeaders{
+            margin: 10px 0;
+        }
+        p{
+            margin: 0 0 0 5px;
+        }
+    }
+}
