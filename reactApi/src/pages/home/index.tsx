@@ -1,12 +1,15 @@
 // import { Link } from 'react-router-dom';
 import { Button, Space, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { useState } from 'react';
+import { useState, FC, useEffect } from 'react';
+
+import {apiObject, paramsType} from '../../App';
+import Headers from '../Headers'
 import AddHeaders from '../AddHeaders';
 
 import './index.scss';
 
-interface parameter {
+export interface parameter {
     key: number;
     fieldKey: string;
     fieldValue: string;
@@ -40,134 +43,140 @@ const parameterColumns:ColumnsType<parameter>=[
         dataIndex: 'description',
     },
 ];
-const parameterDatas:parameter[]=[
-    {
-        key:0,
-        fieldKey:'user',
-        fieldValue:'xiaohe',
-        fieldType:'String',
-        isNecessary:'是',
-        description:'登录名'
-    }
-];
 
-interface headers {
+export interface headers {
     key: number;
     fieldKey: string;
     fieldValue: string;
 };
 
-// const headersColumns:ColumnsType<headers>=[
-//     {
-//         title: '字段名',
-//         dataIndex: 'fieldKey',
-//         // width: 150,
-//     },
-//     {
-//         title: '字段值',
-//         dataIndex: 'fieldValue',
-//         // width: 150,
-//     },
-//     {
-//         title: '操作',
-//         dataIndex: 'action',
-//         key: 'action',
-//         render: (text, record) => {
-//             return(<Space size="middle"><a onClick={()=>deleteItem(record)}>删除</a></Space>)
-//         },
-//     },
-// ];
-// const headersData:headers[]=[
-//     {
-//         key:0,
-//         fieldKey:'Content-Type',
-//         fieldValue:'application/json;charset=UTF-8'
-//     },
-// ];
+let itemData:headers | null = null;
 
+const text = {
+    code:200,
+    msg:'success',
+    data:{
+        user:'789',
+        token:'123456'
+    }
+}
 
-
-export default function Home(){
-
-    const [isModalVisible,setIsModalVisible] = useState<boolean>(false)
-    const [headersData,setHeadersData] = useState<Array<headers>>([
-        {
-            key:0,
-            fieldKey:'Content-Type',
-            fieldValue:'application/json;charset=UTF-8'
-        }
-    ])
-    const headersColumns:ColumnsType<headers>=[
-        {
-            title: '字段名',
-            dataIndex: 'fieldKey',
-            width: '30%',
-            align:'center',
-        },
-        {
-            title: '字段值',
-            dataIndex: 'fieldValue',
-            width: '40%',
-            align:'center',
-        },
-        {
-            title: '操作',
-            dataIndex: 'action',
-            align:'center',
-            render: (text, record) => {
-                return(<Space size="middle"><a onClick={()=>deleteItem(record)}>删除</a></Space>)
-            },
-        },
-    ];
-    function deleteItem(value:headers){
-        let data:Array<headers> = [];
-        headersData.splice(value.key,1);
-        headersData.forEach((item:headers,index:number)=>{
-            let every = {
-                key:index,
-                fieldKey:item.fieldKey,
-                fieldValue:item.fieldValue
+function processingData(data:any){
+    let allKeys = Object.keys(data);
+    debugger
+    return <div className='123'>
+        {allKeys.map((item)=>{
+            console.log(data[item])
+            if(data[item] instanceof Object){
+                processingData(data[item])
+            }else{
+                return item+'：'+data[item]+'，'
             }
-            data.push(every)
-        })
-        setHeadersData(data);
+        })}
+    </div>
+}
+
+interface childProps{
+    currentData:apiObject
+}
+
+const Home: FC<childProps> = (props) => {
+    const [isModalVisible,setIsModalVisible] = useState<boolean>(false)
+    const [title,setTitle] = useState<string>('添加请求')
+    const [headersData,setHeadersData] = useState<Array<headers>>([])
+    const [parameterDatas,setParameterDatas] = useState<Array<parameter>>([])
+    useEffect(()=>{
+        if(props.currentData.id){
+            const keys1 = Object.keys(props.currentData.headers);
+            let data1:Array<headers> = [];
+            keys1.forEach((item,index)=>{
+                data1.push({
+                    key:index,
+                    fieldKey:item,
+                    fieldValue:props.currentData.headers[item]
+                })
+            });
+            let data2:parameter[] = [];
+            let keys2:paramsType[] | undefined = [];
+            if(props.currentData.methods.toLocaleLowerCase()==='get'){
+                keys2 = props.currentData.params;
+            }else{
+                keys2 = props.currentData.data;
+            }
+            if(keys2!==undefined){
+                keys2.forEach((item:paramsType,index:number)=>{
+                    data2.push({
+                        key:index,
+                        fieldKey:item.name,
+                        fieldValue:item.value,
+                        fieldType:item.type,
+                        isNecessary:item.isNecessary?'是':'否',
+                        description:item.description
+                    })
+                })
+            }
+            setHeadersData(data1);
+            setParameterDatas(data2);
+        }
+    },[props.currentData.id])
+    function setItemData(value:headers | null){
+        itemData = value
     };
     
-    function handleOk(data:any){
+    function handleOk(data:headers){
         let newData = [...headersData];
         const num = newData.length;
-        newData[newData.length] = {
-            key:num,
-            fieldKey:data.fieldKey,
-            fieldValue:data.fieldValue
-        };
+        if(data.key!==-1){
+            newData[data.key] = {
+                key:data.key,
+                fieldKey:data.fieldKey,
+                fieldValue:data.fieldValue
+            }
+        }else{
+            newData[newData.length] = {
+                key:num,
+                fieldKey:data.fieldKey,
+                fieldValue:data.fieldValue
+            };
+        }
         setHeadersData(newData);
-        setIsModalVisible(false)
+        setIsModalVisible(false);
+        setItemData(null);
     }
 
     return (
         <div className='content'>
-            <header className='header'>
-                <p className='request-type'>get</p>
-                <p className='request-url'>api/json</p>
-                <p className='request-name'>这是请求的名字</p>
-            </header>
-            <div className='request-description'>
-                <span>详细描述：</span>
-                <span>无</span>
-            </div>
-            <div className='request-headers'>
-                <p>请求头：</p>
-                <Table columns={headersColumns} dataSource={headersData} pagination={false}/>
-                <Button className='add-headers' onClick={()=>setIsModalVisible(true)}>添加请求头</Button>
-            </div>
-            <div className='request-parameter'>
-                <p>参数：</p>
-                <Table columns={parameterColumns} dataSource={parameterDatas} pagination={false}/>
-            </div>
-
-            
-            <AddHeaders isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} handleOk={handleOk}/>
+            {props.currentData.id&&<div>
+                <header className='header'>
+                    <p className='request-type'>{props.currentData.methods}</p>
+                    <p className='request-url'>{props.currentData.url}</p>
+                    <p className='request-name'>{props.currentData.name}</p>
+                </header>
+                <div className='request-description'>
+                    <span>详细描述：</span>
+                    <span>{props.currentData.description}</span>
+                </div>
+                <Headers 
+                    setItemData={setItemData} 
+                    setIsModalVisible={setIsModalVisible}
+                    headersData={headersData}
+                    setHeadersData={setHeadersData}
+                    setTitle={setTitle}
+                />
+                <div className='request-parameter'>
+                    <p>参数：</p>
+                    <Table columns={parameterColumns} dataSource={parameterDatas} pagination={false}/>
+                </div>
+                <div className='success-description'>
+                    <p>返回示例：</p>
+                    <pre>{JSON.stringify(props.currentData.success,null,2)}</pre>
+                </div>
+                <Button>试一试</Button>
+                <AddHeaders isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} handleOk={handleOk} itemData={itemData} title={title}/>
+            </div>}
         </div>
     )
 }
+
+
+export default Home

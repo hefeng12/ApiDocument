@@ -15,7 +15,8 @@ const { Sider } = Layout;
 const { SubMenu } = Menu;
 
 interface childProps{
-    data:left[]
+    data:left[],
+    changeData:Function
 }
 
 const SliderBar:FC<childProps> = (props)=>{
@@ -51,7 +52,7 @@ const SliderBar:FC<childProps> = (props)=>{
                         Files
                     </Menu.Item>
                 </Menu> */}
-                <Menu theme="dark" defaultSelectedKeys={['0']} mode="inline" onSelect={(e)=>{console.log(e)}}>
+                <Menu theme="dark" defaultSelectedKeys={['0']} mode="inline" onSelect={(e)=>{props.changeData(Number(e.key))}}>
                     {props.data&&props.data.map(item=>{
                         return (
                         <SubMenu key={item.moduleName} icon={<UserOutlined />} title={item.moduleName}>

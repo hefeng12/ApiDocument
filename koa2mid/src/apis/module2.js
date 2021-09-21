@@ -17,12 +17,9 @@ module.exports={
                     description:'该字段的描述',//字段描述
                     isNecessary:true,//是否必须
                 },
-            ],
-            data:[
-                //post方式所需的参数，可以有多个，也可以为空，请求时会自动放到请求的body里面
                 {
                     name:'userName',//字段名
-                    value:'xiaohe',//字段值
+                    value:'xiaozheng',//字段值
                     type:'String',//字段类型
                     description:'该字段的描述',//字段描述
                     isNecessary:true,//是否必须
@@ -51,8 +48,8 @@ module.exports={
             methods:'post',
             url:'/login',
             description:'该接口的描述',
-            params:[
-                //get方式所需的参数，可以有多个，也可以为空，请求时会自动拼接到url后面
+            data:[
+                //post方式所需的参数，可以有多个，也可以为空，请求时会自动放到请求的body里面
                 {
                     name:'userName',//字段名
                     value:'xiaohe',//字段值
@@ -60,12 +57,9 @@ module.exports={
                     description:'该字段的描述',//字段描述
                     isNecessary:true,//是否必须
                 },
-            ],
-            data:[
-                //post方式所需的参数，可以有多个，也可以为空，请求时会自动放到请求的body里面
                 {
                     name:'userName',//字段名
-                    value:'xiaohe',//字段值
+                    value:'xiaozheng',//字段值
                     type:'String',//字段类型
                     description:'该字段的描述',//字段描述
                     isNecessary:true,//是否必须

@@ -37,3 +37,11 @@
 .content .request-parameter p, .content .request-headers p {
   margin: 0 0 0 5px;
 }
+
+.content .success-description {
+  margin: 5px 0;
+}
+
+.content .success-description p {
+  margin: 0;
+}
